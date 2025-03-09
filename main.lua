@@ -24,7 +24,7 @@ if getgenv().CerberusLibrary then
 end
 
 if not getgenv().CerberusImportPath then
-	getgenv().CerberusImportPath = ""
+	getgenv().CerberusImportPath = "https://raw.githubusercontent.com/IceMinisterq/Cerberus-UI-Library/refs/heads"
 end
 
 
