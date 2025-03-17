@@ -18,7 +18,7 @@ function Section.new(Library, name: string, SectionFlag: string?, tabCanvas: Scr
 	local self = setmetatable({
 		Flag = SectionFlag or name,
 		Templates = Library.Templates,
-		InterfaceElements = Library.InterfaceElements,
+		Toggles = Library.Toggles,
 		Library = Library
 	}, Section)
 
@@ -60,43 +60,39 @@ end
 
 function Section:CreateButton(ButtonConfig)
 	local element = Button.new(self, ButtonConfig)
-	table.insert(self.InterfaceElements, element)
 	return element
 end
 
 function Section:CreateToggle(ToggleConfig)
 	local element = Toggle.new(self, ToggleConfig)
-	table.insert(self.InterfaceElements, element)
+
+	table.insert(self.Toggles, element)
+
 	return element
 end
 
 function Section:CreateCheckbox(ToggleConfig)
 	local element = Checkbox.new(self, ToggleConfig)
-	table.insert(self.InterfaceElements, element)
 	return element
 end
 
 function Section:CreateSlider(ToggleConfig)
 	local element = Slider.new(self, ToggleConfig)
-	table.insert(self.InterfaceElements, element)
 	return element
 end
 
 function Section:CreateDropdown(ToggleConfig)
 	local element = Dropdown.new(self, ToggleConfig)
-	table.insert(self.InterfaceElements, element)
 	return element
 end
 
 function Section:CreateMultiDropdown(ToggleConfig)
 	local element = MultiDropdown.new(self, ToggleConfig)
-	table.insert(self.InterfaceElements, element)
 	return element
 end
 
 function Section:CreateParagraph(ToggleConfig)
 	local button = Paragraph.new(self, ToggleConfig)
-	table.insert(self.InterfaceElements, button)
 	return button
 end
 
