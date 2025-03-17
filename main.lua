@@ -24,9 +24,9 @@ if getgenv().CerberusLibrary then
 end
 
 if not getgenv().CerberusImportPath then
-	getgenv().CerberusImportPath = "https://raw.githubusercontent.com/IceMinisterq/Cerberus-UI-Library/refs/heads/main"
+	getgenv().CerberusImportPath = DEV_MODE and "http://127.0.0.1:5500/UI/"
+    or "https://raw.githubusercontent.com/IceMinisterq/Cerberus-UI-Library/refs/heads/main/"
 end
-
 
 local Section = IS_STUDIO and require(script.Section) or
 				loadstring(game:HttpGet(`{CerberusImportPath}/Section.lua`))()
@@ -40,9 +40,12 @@ type t = {
 }
 
 function Library.new(libSettings: t)
+	local assets = IS_STUDIO and ReplicatedStorage.Library or game:GetObjects("rbxassetid://134867744650646")[1]
 	local self = setmetatable(Library, {})
 
-	local assets = IS_STUDIO and ReplicatedStorage.Library or game:GetObjects("rbxassetid://134867744650646")[1]
+	self.TabButtons = {}
+	self.Toggles = {}
+	self.connections = {}
 
     local gui	  = assets.ScreenGui
 	local Window  = gui.Window
@@ -62,9 +65,6 @@ function Library.new(libSettings: t)
 	self.ToggleKey = libSettings.ToggleKey
 
 	self.libTitle.Text = libSettings.Title
-
-	self.TabButtons = {}
-	self.InterfaceElements = {}
 
 	self:_initWindowHandler()
 
@@ -134,9 +134,7 @@ function Library:CreateTab(TabName:string)
 
 	return {
 		CreateSection = function(_, SectionName: string, SectionFlag: string)
-			local section = Section.new(self, SectionName, SectionFlag, tabCanvas)
-			table.insert(self.InterfaceElements, section)
-			return section
+			return Section.new(self, SectionName, SectionFlag, tabCanvas)
 		end,
 	}
 end
@@ -219,15 +217,13 @@ function Library:_initWindowHandler()
 		end
 	end
 
-	self.connections = {
-		dragFrame1.InputBegan:Connect(inputStarted),
-		dragFrame1.InputEnded:Connect(inputStarted),
+	self:Connect(dragFrame1.InputBegan, inputStarted)
+	self:Connect(dragFrame1.InputEnded, inputStarted)
 
-		dragFrame2.InputBegan:Connect(inputStarted),
-		dragFrame2.InputEnded:Connect(inputStarted),
+	self:Connect(dragFrame2.InputBegan, inputStarted)
+	self:Connect(dragFrame2.InputEnded, inputStarted)
 
-		UserInputService.InputBegan:Connect(inputBegan),
-	}
+	self:Connect(UserInputService.InputBegan, inputBegan)
 end
 
 function Library:LoadConfig()
@@ -255,6 +251,12 @@ function Library:LoadConfig()
         config = {} -- Fallback to an empty config
     end
 
+	if getgenv().CerberusLibrary then
+		for _, toggle in CerberusLibrary.Toggles do
+			toggle:SetValue(false, true)
+		end
+	end
+
     getgenv().Config = config
     -- print("Config loaded successfully.")
 end
@@ -276,6 +278,7 @@ function Library:SaveConfig()
 end
 
 function Library:Connect(signal: RBXScriptSignal, fn: (any) -> nil)
+	-- print(self.connections, signal, fn)
 	local connection = signal:Connect(fn)
 	table.insert(self.connections, connection)
 	return connection
