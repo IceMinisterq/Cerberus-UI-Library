@@ -52,6 +52,10 @@ function Toggle:_init()
 end
 
 function Toggle:SetValue(value: boolean, loadSavedValue: boolean)
+	if self.enabled == value then
+		return
+	end
+
 	self.enabled = value
 
 	local tweenInfo = TweenInfo.new(0.2)
